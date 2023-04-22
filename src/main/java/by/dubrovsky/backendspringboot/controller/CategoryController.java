@@ -2,6 +2,7 @@ package by.dubrovsky.backendspringboot.controller;
 
 import by.dubrovsky.backendspringboot.entity.CategoryEntity;
 import by.dubrovsky.backendspringboot.repository.CategoryRepository;
+import by.dubrovsky.backendspringboot.search.CategorySearchValues;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,5 +80,9 @@ public class CategoryController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @PostMapping("/search")
+    public ResponseEntity<List<CategoryEntity>> search(@RequestBody CategorySearchValues categorySearchValues) {
+        return ResponseEntity.ok(categoryRepository.findByTitle(categorySearchValues.getText()));
+    }
 
 }
