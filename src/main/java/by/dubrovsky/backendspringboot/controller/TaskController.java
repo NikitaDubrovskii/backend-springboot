@@ -1,13 +1,11 @@
 package by.dubrovsky.backendspringboot.controller;
 
 import by.dubrovsky.backendspringboot.entity.TaskEntity;
-import by.dubrovsky.backendspringboot.entity.TaskEntity;
-import by.dubrovsky.backendspringboot.repository.TaskRepository;
 import by.dubrovsky.backendspringboot.search.TaskSearchValues;
+import by.dubrovsky.backendspringboot.service.TaskService;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,15 +17,16 @@ import java.util.NoSuchElementException;
 @RestController
 @RequestMapping("/task")
 public class TaskController {
-    private TaskRepository taskRepository;
+    
+    private final TaskService taskService;
 
-    public TaskController(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
     @GetMapping("/all")
     public List<TaskEntity> findAll() {
-        return taskRepository.findAll();
+        return taskService.findAll();
     }
 
     @PostMapping("/add")
@@ -41,7 +40,7 @@ public class TaskController {
             return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
         }
 
-        return ResponseEntity.ok(taskRepository.save(category));
+        return ResponseEntity.ok(taskService.add(category));
     }
 
     @PutMapping("/update")
@@ -55,7 +54,7 @@ public class TaskController {
             return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
         }
 
-        return ResponseEntity.ok(taskRepository.save(category));
+        return ResponseEntity.ok(taskService.update(category));
     }
 
     @GetMapping("/id/{id}")
@@ -63,7 +62,7 @@ public class TaskController {
         TaskEntity task;
 
         try {
-            task = taskRepository.findById(id).get();
+            task = taskService.findById(id);
         } catch (NoSuchElementException e) {
             e.printStackTrace();
             return new ResponseEntity("Id=" + id + " not found", HttpStatus.NOT_ACCEPTABLE);
@@ -75,7 +74,7 @@ public class TaskController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity delete(@PathVariable Long id) {
         try {
-            taskRepository.deleteById(id);
+            taskService.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
             e.printStackTrace();
             return new ResponseEntity("id=" + id + " not found", HttpStatus.NOT_ACCEPTABLE);
@@ -104,7 +103,7 @@ public class TaskController {
 
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
 
-        Page result = taskRepository.findByParams(text, completed, priorityId, categoryId, pageRequest);
+        Page result = taskService.findByParams(text, completed, priorityId, categoryId, pageRequest);
 
         return ResponseEntity.ok(result);
     }
