@@ -5,5 +5,5 @@ import lombok.*;
 @NoArgsConstructor
 @Data
 public class CategorySearchValues {
-    private String text;
+    private String title;
 }

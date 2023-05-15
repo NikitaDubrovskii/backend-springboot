@@ -14,9 +14,9 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<TaskEntity, Long> {
 
     @Query("SELECT t FROM TaskEntity t WHERE " +
-            "(:title IS NULL OR :title='' OR LOWER(t.title) LIKE LOWER(CONCAT('%', :title, '%'))) AND " +
-            "(:completed IS NULL OR t.completed=:completed) AND " +
-            "(:priorityId IS NULL OR t.priorityId=:priorityId) AND " +
+            "(:title IS NULL OR :title='' OR LOWER(t.title) LIKE LOWER(CONCAT('%', :title, '%'))) AND" +
+            "(:completed IS NULL OR t.completed=:completed) AND" +
+            "(:priorityId IS NULL OR t.priorityId=:priorityId) AND" +
             "(:categoryId IS NULL OR t.categoryId=:categoryId)")
     Page<TaskEntity> findByParams(@Param("title") String title,
                                   @Param("completed") Integer completed,

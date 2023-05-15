@@ -2,12 +2,14 @@ package by.dubrovsky.backendspringboot.entity;
 
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "priority", schema = "public", catalog = "todo_db")
 @Setter
+@Getter
 @NoArgsConstructor
 @EqualsAndHashCode
 public class PriorityEntity {
@@ -21,16 +23,4 @@ public class PriorityEntity {
     @Basic
     @Column(name = "color")
     private String color;
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getColor() {
-        return color;
-    }
 }

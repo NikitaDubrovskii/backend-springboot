@@ -36,7 +36,7 @@ public class CategoryService {
         return categoryRepository.findById(id).get();
     }
 
-    public List<CategoryEntity> findAll() {
+    public List<CategoryEntity> findAllByOrderByTitleAsc() {
         return categoryRepository.findAllByOrderByTitleAsc();
     }
 }

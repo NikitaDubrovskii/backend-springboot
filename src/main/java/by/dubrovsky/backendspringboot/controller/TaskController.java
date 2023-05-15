@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/task")
 public class TaskController {
     
@@ -25,50 +26,37 @@ public class TaskController {
     }
 
     @GetMapping("/all")
-    public List<TaskEntity> findAll() {
-        return taskService.findAll();
+    public ResponseEntity<List<TaskEntity>> findAll() {
+        return ResponseEntity.ok(taskService.findAll());
     }
 
     @PostMapping("/add")
-    public ResponseEntity<TaskEntity> add(@RequestBody TaskEntity category) {
+    public ResponseEntity<TaskEntity> add(@RequestBody TaskEntity task) {
 
-        if (category.getId() != null && category.getId() != 0) {
+        if (task.getId() != null && task.getId() != 0) {
             return new ResponseEntity("redundant param: id MUST be null", HttpStatus.NOT_ACCEPTABLE);
         }
 
-        if (category.getTitle() == null || category.getTitle().length() == 0) {
+        if (task.getTitle() == null || task.getTitle().length() == 0) {
             return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
         }
 
-        return ResponseEntity.ok(taskService.add(category));
+        return ResponseEntity.ok(taskService.add(task));
     }
 
     @PutMapping("/update")
-    public ResponseEntity<TaskEntity> update(@RequestBody TaskEntity category) {
+    public ResponseEntity<TaskEntity> update(@RequestBody TaskEntity task) {
 
-        if (category.getId() == null || category.getId() == 0) {
+        if (task.getId() == null || task.getId() == 0) {
             return new ResponseEntity("missed param: id", HttpStatus.NOT_ACCEPTABLE);
         }
 
-        if (category.getTitle() == null || category.getTitle().length() == 0) {
+        if (task.getTitle() == null || task.getTitle().length() == 0) {
             return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
         }
+        taskService.update(task);
 
-        return ResponseEntity.ok(taskService.update(category));
-    }
-
-    @GetMapping("/id/{id}")
-    public ResponseEntity<TaskEntity> findById(@PathVariable Long id) {
-        TaskEntity task;
-
-        try {
-            task = taskService.findById(id);
-        } catch (NoSuchElementException e) {
-            e.printStackTrace();
-            return new ResponseEntity("Id=" + id + " not found", HttpStatus.NOT_ACCEPTABLE);
-        }
-
-        return ResponseEntity.ok(task);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -81,6 +69,20 @@ public class TaskController {
         }
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<TaskEntity> findById(@PathVariable Long id) {
+        TaskEntity task = null;
+
+        try {
+            task = taskService.findById(id);
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+            return new ResponseEntity("Id=" + id + " not found", HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        return ResponseEntity.ok(task);
     }
 
     @PostMapping("/search")
@@ -97,13 +99,13 @@ public class TaskController {
         Integer pageNumber = taskSearchValues.getPageNumber() != null ? taskSearchValues.getPageNumber() : null;
         Integer pageSize = taskSearchValues.getPageSize() != null ? taskSearchValues.getPageSize() : null;
 
-        Sort.Direction direction = sortDirection == null || sortDirection.trim().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort.Direction direction = sortDirection == null || sortDirection.trim().length() == 0 || sortDirection.trim().equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
 
         Sort sort = Sort.by(direction, sortColumn);
 
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sort);
 
-        Page result = taskService.findByParams(text, completed, priorityId, categoryId, pageRequest);
+        Page<TaskEntity> result = taskService.findByParams(text, completed, priorityId, categoryId, pageRequest);
 
         return ResponseEntity.ok(result);
     }

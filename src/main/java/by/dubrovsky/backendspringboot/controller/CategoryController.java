@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/category")
 public class CategoryController {
@@ -23,7 +24,7 @@ public class CategoryController {
 
     @GetMapping("/all")
     public List<CategoryEntity> findAll() {
-        return categoryService.findAll();
+        return categoryService.findAllByOrderByTitleAsc();
     }
 
     @PostMapping("/add")
@@ -33,7 +34,7 @@ public class CategoryController {
             return new ResponseEntity("redundant param: id MUST be null", HttpStatus.NOT_ACCEPTABLE);
         }
 
-        if (category.getTitle() == null && category.getTitle().length() == 0) {
+        if (category.getTitle() == null || category.getTitle().length() == 0) {
             return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
         }
 
@@ -41,7 +42,7 @@ public class CategoryController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<CategoryEntity> update(@RequestBody  CategoryEntity category) {
+    public ResponseEntity update(@RequestBody  CategoryEntity category) {
 
         if (category.getId() == null || category.getId() == 0) {
             return new ResponseEntity("missed param: id", HttpStatus.NOT_ACCEPTABLE);
@@ -50,13 +51,14 @@ public class CategoryController {
         if (category.getTitle() == null || category.getTitle().length() == 0) {
             return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
         }
+        categoryService.update(category);
 
-        return ResponseEntity.ok(categoryService.update(category));
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("/id/{id}")
     public ResponseEntity<CategoryEntity> findById(@PathVariable Long id) {
-        CategoryEntity category;
+        CategoryEntity category = null;
 
         try {
             category = categoryService.findById(id);
@@ -82,7 +84,7 @@ public class CategoryController {
 
     @PostMapping("/search")
     public ResponseEntity<List<CategoryEntity>> search(@RequestBody CategorySearchValues categorySearchValues) {
-        return ResponseEntity.ok(categoryService.findByTitle(categorySearchValues.getText()));
+        return ResponseEntity.ok(categoryService.findByTitle(categorySearchValues.getTitle()));
     }
 
 }

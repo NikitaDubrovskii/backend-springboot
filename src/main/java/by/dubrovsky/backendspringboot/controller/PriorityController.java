@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/priority")
 public class PriorityController {
 
@@ -58,13 +59,14 @@ public class PriorityController {
         if (priority.getColor() == null || priority.getColor().length() == 0) {
             return new ResponseEntity("missed param: color", HttpStatus.NOT_ACCEPTABLE);
         }
+        priorityService.update(priority);
 
-        return ResponseEntity.ok(priorityService.update(priority));
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @GetMapping("/id/{id}")
     public ResponseEntity<PriorityEntity> findById(@PathVariable Long id) {
-        PriorityEntity priority;
+        PriorityEntity priority = null;
 
         try {
             priority = priorityService.findById(id);
@@ -90,6 +92,6 @@ public class PriorityController {
 
     @PostMapping("/search")
     public ResponseEntity<List<PriorityEntity>> search(@RequestBody PrioritySearchValues prioritySearchValues) {
-        return ResponseEntity.ok(priorityService.findByTitle(prioritySearchValues.getText()));
+        return ResponseEntity.ok(priorityService.findByTitle(prioritySearchValues.getTitle()));
     }
 }

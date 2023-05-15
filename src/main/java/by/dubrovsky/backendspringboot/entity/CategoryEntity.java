@@ -2,6 +2,7 @@ package by.dubrovsky.backendspringboot.entity;
 
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import lombok.Setter;
 @Table(name = "category", schema = "public", catalog = "todo_db")
 @NoArgsConstructor
 @Setter
+@Getter
 @EqualsAndHashCode
 public class CategoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,20 +26,4 @@ public class CategoryEntity {
     @Basic
     @Column(name = "uncompleted_count")
     private Long uncompletedCount;
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public Long getCompletedCount() {
-        return completedCount;
-    }
-
-    public Long getUncompletedCount() {
-        return uncompletedCount;
-    }
 }
